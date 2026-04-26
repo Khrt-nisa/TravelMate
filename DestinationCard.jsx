@@ -15,10 +15,7 @@ export default function DestinationCard({ item, full }) {
         full && styles.fullCard
       ]}
       imageStyle={{ borderRadius: 15 }}
-      resizeMode="cover"
-      onError={() => console.log("❌ Gagal load gambar")}
     >
-
       <View style={styles.overlay}>
         <Text style={styles.title}>{item.title}</Text>
 
@@ -29,7 +26,6 @@ export default function DestinationCard({ item, full }) {
         <Text style={styles.text}>📍 {item.location}</Text>
         <Text style={styles.text}>⭐ {item.rating}</Text>
       </View>
-
     </ImageBackground>
   );
 }

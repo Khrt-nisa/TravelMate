@@ -1,11 +1,20 @@
-import { SectionList, Text, StyleSheet, View, Image, ScrollView } from "react-native";
+import React, { useState } from "react";
+import {
+  SectionList,
+  Text,
+  StyleSheet,
+  View,
+  Image,
+  ScrollView,
+} from "react-native";
+
 import Header from "../components/Header";
 import CategoryList from "../components/CategoryList";
 import DestinationCard from "../components/DestinationCard";
 
 export default function HomeScreen() {
 
-  const data = [
+  const [data] = useState([
     {
       title: "Pantai Bali",
       location: "Bali",
@@ -20,9 +29,9 @@ export default function HomeScreen() {
       description: "Gunung dengan pemandangan sunrise epik",
       image: require("../../assets/images/bromo.jpg"),
     },
-  ];
+  ]);
 
-  const trending = [
+  const [trending] = useState([
     {
       title: "Labuan Bajo",
       location: "NTT",
@@ -37,51 +46,14 @@ export default function HomeScreen() {
       description: "Diving terbaik dunia",
       image: require("../../assets/images/rajaampat.jpg"),
     },
-  ];
+  ]);
 
+  // ✅ FIXED sections
   const sections = [
-    {
-      title: "Kategori",
-      data: [{}],
-      renderItem: () => <CategoryList />,
-    },
-    {
-      title: "Rekomendasi",
-      data: [{}],
-      renderItem: () => (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {data.map((item, index) => (
-            <DestinationCard key={index} item={item} />
-          ))}
-        </ScrollView>
-      ),
-    },
-    {
-      title: "Trending 🔥",
-      data: trending,
-      renderItem: ({ item }) => <DestinationCard item={item} full />,
-    },
-    {
-      title: "Top Destination",
-      data: [{}],
-      renderItem: () => (
-        <View style={styles.featuredCard}>
-          <Image
-            source={require("../../assets/images/ijen.jpg")}
-            style={styles.featuredImage}
-          />
-
-          <View style={styles.featuredContent}>
-            <Text style={styles.featuredTitle}>Gunung Ijen</Text>
-            <Text style={styles.featuredLocation}>Banyuwangi</Text>
-
-            <Text style={styles.featuredDesc}>
-              Gunung Ijen terkenal dengan blue fire dan danau kawah yang indah.
-            </Text>
-          </View>
-        </View>
-      ),
-    },
+    { title: "Kategori", type: "kategori", data: [{}] },
+    { title: "Rekomendasi", type: "rekomendasi", data: [{}] },
+    { title: "Trending 🔥", type: "trending", data: trending },
+    { title: "Top Destination", type: "top", data: [{}] },
   ];
 
   return (
@@ -89,12 +61,55 @@ export default function HomeScreen() {
       ListHeaderComponent={<Header />}
       sections={sections}
       keyExtractor={(item, index) => index.toString()}
+
       renderSectionHeader={({ section }) => (
         <Text style={styles.section}>{section.title}</Text>
       )}
-      renderItem={({ item, section }) =>
-        section.renderItem({ item })
-      }
+
+      // 🔥 FIX UTAMA DI SINI
+      renderItem={({ item, section }) => {
+
+        if (section.type === "kategori") {
+          return <CategoryList />;
+        }
+
+        if (section.type === "rekomendasi") {
+          return (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {data.map((item, index) => (
+                <DestinationCard key={index} item={item} />
+              ))}
+            </ScrollView>
+          );
+        }
+
+        if (section.type === "trending") {
+          return <DestinationCard item={item} full />;
+        }
+
+        if (section.type === "top") {
+          return (
+            <View style={styles.featuredCard}>
+              <Image
+                source={require("../../assets/images/ijen.jpg")}
+                style={styles.featuredImage}
+              />
+
+              <View style={styles.featuredContent}>
+                <Text style={styles.featuredTitle}>Gunung Ijen</Text>
+                <Text style={styles.featuredLocation}>
+                  Banyuwangi, Jawa Timur
+                </Text>
+
+                <Text style={styles.featuredDesc}>
+                  Gunung Ijen terkenal dengan blue fire yang langka.
+                </Text>
+              </View>
+            </View>
+          );
+        }
+
+      }}
     />
   );
 }
